@@ -20,13 +20,20 @@ class MetricField(str, Enum):
     """Показатель эффективности публикации."""
 
     VIEWS = "views"
+    REACH = "reach"
     REACTIONS = "reactions"
     COMMENTS = "comments"
     SHARES = "shares"
+    CONVERSIONS = "conversions"
 
 
 class PublicationMetrics(BaseModel):
-    """Показатели эффективности публикации, вводимые специалистом команды."""
+    """Показатели эффективности публикации, вводимые специалистом.
+
+    Реакции, комментарии и репосты характеризуют вовлечённость. Охват
+    и конверсии указываются при наличии данных платформы. Иные показатели,
+    согласованные с компанией, передаются в поле additional_metrics.
+    """
 
     material_id: str
     campaign_id: str
@@ -34,9 +41,12 @@ class PublicationMetrics(BaseModel):
     platform: TargetPlatform
     published_at: datetime
     views: int = Field(ge=0)
+    reach: int | None = Field(default=None, ge=0)
     reactions: int = Field(ge=0)
     comments: int = Field(ge=0)
     shares: int = Field(ge=0)
+    conversions: int | None = Field(default=None, ge=0)
+    additional_metrics: dict[str, float] = Field(default_factory=dict)
     reported_by: str
 
 
@@ -48,9 +58,11 @@ class ConceptResult(BaseModel):
     platform: TargetPlatform
     material_ids: list[str] = Field(default_factory=list)
     views: int = Field(ge=0)
+    reach: int | None = Field(default=None, ge=0)
     reactions: int = Field(ge=0)
     comments: int = Field(ge=0)
     shares: int = Field(ge=0)
+    conversions: int | None = Field(default=None, ge=0)
     ab_variant: ABVariantRef | None = None
 
 

@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 
 
 class TrendSource(str, Enum):
-    """Тип внешнего источника, из которого получен сигнал о тренде."""
+    """Тип внешнего источника, из которого получен сигнал о тренде. Перечень подлежит уточнению."""
 
     TELEGRAM = "telegram"
     VK = "vk"

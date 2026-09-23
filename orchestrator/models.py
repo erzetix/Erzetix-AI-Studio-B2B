@@ -33,7 +33,6 @@ class MaterialState(str, Enum):
     REVIEWING = "reviewing"
     AWAITING_APPROVAL = "awaiting_approval"
     ESCALATED = "escalated"
-    AWAITING_CLIENT_SIGNOFF = "awaiting_client_signoff"
     APPROVED = "approved"
     PUBLISHING = "publishing"
     PUBLISHED = "published"
@@ -90,10 +89,12 @@ class MaterialRun(BaseModel):
     draft_id: str
     state: MaterialState = MaterialState.DRAFTING
     # Число выполненных циклов автоматической доработки по замечаниям
-    # агента-хранителя бренда. Возвраты материала специалистом команды
-    # в счётчик не входят.
+    # агента-хранителя бренда. Возвраты материала специалистом в счётчик
+    # не входят.
     revision_cycles: int = Field(ge=0, default=0)
-    client_signoff_required: bool = False
+    # Ссылка на готовый медиафайл, собранный оркестратором из результатов
+    # генерации.
+    final_media_ref: str | None = None
     updated_at: datetime
     failure_reason: str | None = None
 

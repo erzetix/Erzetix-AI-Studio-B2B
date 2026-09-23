@@ -12,13 +12,7 @@ from dataclasses import dataclass, field
 
 from agents.metrics_analyst.models import MetricsAnalysis
 
-from .models import (
-    Brief,
-    CampaignContext,
-    CharacterProfile,
-    CharacterRegistration,
-    IdentityValidationResult,
-)
+from .models import Brief, CampaignContext, CharacterProfile
 
 
 @dataclass
@@ -38,10 +32,10 @@ class CharacterCoreConfig:
 
 class CharacterCoreAgent:
     """
-    Ведёт профили персонажей: регистрация, проверка идентичности,
-    активация, обновление поведенческого состояния. Принимает бриф,
-    обогащает его данными идентичности персонажа и возвращает контекст
-    кампании, который оркестратор передаёт последующим подсистемам.
+    Принимает бриф, обогащает его данными идентичности персонажа
+    и возвращает контекст кампании, который оркестратор передаёт
+    последующим подсистемам. Обновляет поведенческое состояние
+    персонажа по результатам анализа метрик.
 
     Реализация методов ниже находится в закрытой ветке разработки
     и не входит в состав публичного репозитория.
@@ -49,18 +43,6 @@ class CharacterCoreAgent:
 
     def __init__(self, config: CharacterCoreConfig | None = None) -> None:
         self.config = config or CharacterCoreConfig()
-
-    def register_profile(self, registration: CharacterRegistration) -> CharacterProfile:
-        """Регистрирует персонажа компании; профиль создаётся в состоянии draft."""
-        raise NotImplementedError("Логика реализована в закрытой ветке разработки")
-
-    def validate_identity(self, character_id: str) -> IdentityValidationResult:
-        """Проверяет консистентность параметров идентичности персонажа."""
-        raise NotImplementedError("Логика реализована в закрытой ветке разработки")
-
-    def activate_profile(self, character_id: str) -> CharacterProfile:
-        """Переводит профиль в состояние active после успешной проверки идентичности."""
-        raise NotImplementedError("Логика реализована в закрытой ветке разработки")
 
     def handle_brief(self, brief: Brief) -> CampaignContext:
         """Принимает бриф и возвращает обогащённый контекст кампании."""

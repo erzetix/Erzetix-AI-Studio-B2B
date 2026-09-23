@@ -13,7 +13,7 @@ from dataclasses import dataclass
 
 from agents.brand_guardian.models import MaterialVerdict, RevisionNote, TargetAgent, Verdict
 from agents.character_core.models import Brief
-from agents.visualizer.models import GenerationTask, MediaAsset
+from agents.visualizer.models import AssetBundle, GenerationTask, MediaAsset
 
 from .models import CampaignRun, CampaignState, MaterialRun, MaterialState
 
@@ -70,16 +70,10 @@ MATERIAL_TRANSITIONS: dict[MaterialState, tuple[MaterialState, ...]] = {
     ),
     MaterialState.AWAITING_APPROVAL: (
         MaterialState.APPROVED,
-        MaterialState.AWAITING_CLIENT_SIGNOFF,
         MaterialState.DRAFTING,  # возвращено специалистом: текст
         MaterialState.GENERATING,  # возвращено специалистом: визуальный ряд
     ),
     MaterialState.ESCALATED: (MaterialState.AWAITING_APPROVAL,),
-    MaterialState.AWAITING_CLIENT_SIGNOFF: (
-        MaterialState.APPROVED,
-        MaterialState.DRAFTING,  # отклонено компанией: текст
-        MaterialState.GENERATING,  # отклонено компанией: визуальный ряд
-    ),
     MaterialState.APPROVED: (MaterialState.PUBLISHING,),
     MaterialState.PUBLISHING: (MaterialState.PUBLISHED, MaterialState.FAILED),
     MaterialState.PUBLISHED: (),
@@ -190,4 +184,8 @@ class PipelineOrchestrator:
 
     def dispatch_generation(self, tasks: list[GenerationTask]) -> list[MediaAsset]:
         """Направляет задания на генерацию внешним сервисам с учётом резервных провайдеров."""
+        raise NotImplementedError("Логика реализована в закрытой ветке разработки")
+
+    def assemble_media(self, material: MaterialRun, assets: AssetBundle) -> str:
+        """Собирает результаты генерации материала в готовый медиафайл, возвращает ссылку на него."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")

@@ -33,7 +33,7 @@ class ExperimentVariant(BaseModel):
 
 
 class Experiment(BaseModel):
-    """Эксперимент: сопоставление вариантов контента по заданному показателю."""
+    """Эксперимент: сопоставление вариантов контента по показателю, согласованному с компанией."""
 
     experiment_id: str
     character_id: str
@@ -42,7 +42,6 @@ class Experiment(BaseModel):
     target_metric: MetricField
     variants: list[ExperimentVariant] = Field(min_length=2)
     status: ExperimentStatus = ExperimentStatus.PLANNED
-    created_by: str
     created_at: datetime
 
 

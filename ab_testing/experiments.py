@@ -42,7 +42,7 @@ class ABTestingService:
         self.config = config or ABTestingConfig()
 
     def register(self, experiment: Experiment) -> Experiment:
-        """Регистрирует эксперимент в состоянии planned."""
+        """Формирует эксперимент в состоянии planned."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
 
     def active_experiments(self, character_id: str) -> list[Experiment]:

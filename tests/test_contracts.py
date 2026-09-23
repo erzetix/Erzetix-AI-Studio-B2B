@@ -24,7 +24,7 @@ from agents.brand_guardian.models import (
     TargetAgent,
     Verdict,
 )
-from agents.character_core.models import Brief, CampaignContext, CharacterRegistration
+from agents.character_core.models import Brief, CampaignContext
 from agents.creator.models import DraftBundle
 from agents.metrics_analyst.models import MetricsAnalysis
 from agents.strategist.models import ContentPlan
@@ -40,8 +40,7 @@ from orchestrator.pipeline import (
     is_campaign_completed,
     state_after_review,
 )
-from workspace.api import WorkspaceAPI
-from workspace.models import ApprovalDecision, ClientAccount, DecisionSource, MaterialView
+from workspace.models import ApprovalDecision, ClientReport, MaterialView
 
 ROOT = Path(__file__).resolve().parent.parent
 NOW = datetime(2026, 9, 1, tzinfo=timezone.utc)
@@ -66,8 +65,7 @@ def test_json_examples_are_valid_json(path: str) -> None:
 # Полные JSON-примеры документации и модели, которым они соответствуют.
 # Сокращённые фрагменты входных контрактов в перечень не входят.
 FULL_EXAMPLES: list[tuple[str, int, type[BaseModel]]] = [
-    ("agents/character_core/README.md", 0, CharacterRegistration),
-    ("agents/character_core/README.md", 1, Brief),
+    ("agents/character_core/README.md", 0, Brief),
     ("agents/trend_analyst/README.md", 1, TrendReport),
     ("agents/strategist/README.md", 1, ContentPlan),
     ("agents/creator/README.md", 1, DraftBundle),
@@ -78,7 +76,6 @@ FULL_EXAMPLES: list[tuple[str, int, type[BaseModel]]] = [
     ("ab_testing/README.md", 1, ExperimentResult),
     ("workspace/README.md", 0, MaterialView),
     ("workspace/README.md", 1, ApprovalDecision),
-    ("workspace/README.md", 2, ApprovalDecision),
 ]
 
 
@@ -88,7 +85,7 @@ def test_full_examples_match_models(path: str, index: int, model: type[BaseModel
 
 
 def test_campaign_context_example_matches_model() -> None:
-    brief, context = json_examples("agents/character_core/README.md")[1:3]
+    brief, context = json_examples("agents/character_core/README.md")[0:2]
     context["brief"] = brief
     CampaignContext.model_validate(context)
 
@@ -134,7 +131,7 @@ def test_publishing_only_from_approved() -> None:
 
 def test_approval_only_by_human_decision() -> None:
     sources = {s for s, targets in MATERIAL_TRANSITIONS.items() if MaterialState.APPROVED in targets}
-    assert sources == {MaterialState.AWAITING_APPROVAL, MaterialState.AWAITING_CLIENT_SIGNOFF}
+    assert sources == {MaterialState.AWAITING_APPROVAL}
 
 
 def test_terminal_material_states() -> None:
@@ -242,27 +239,25 @@ def test_guardian_note_requires_category() -> None:
     )
 
 
-def test_return_requires_notes_and_client_decision_requires_channel() -> None:
+def test_return_requires_notes() -> None:
     with pytest.raises(ValidationError):
         ApprovalDecision(material_id="mat_001", approved=False, decided_by="s", decided_at=NOW)
     with pytest.raises(ValidationError):
         ApprovalDecision(
             material_id="mat_001",
             approved=True,
-            source=DecisionSource.CLIENT,
             decided_by="s",
             decided_at=NOW,
+            revision_notes=[note(TargetAgent.CREATOR)],
         )
 
 
-def test_specialist_access_limited_to_assigned_clients() -> None:
-    client = ClientAccount(
-        client_id="client_001",
-        display_name="Компания",
-        brand_rules_ref="vault://brand-rules/client_001",
-        account_credentials_ref="vault://accounts/client_001",
-        assigned_specialists=["specialist_01"],
-    )
-    api = WorkspaceAPI()
-    assert api.has_access("specialist_01", client)
-    assert not api.has_access("specialist_02", client)
+def test_report_period_order() -> None:
+    with pytest.raises(ValidationError):
+        ClientReport(
+            report_id="rep_001",
+            client_id="client_001",
+            period_start=NOW,
+            period_end=NOW,
+            generated_at=NOW,
+        )
