@@ -11,7 +11,7 @@ from __future__ import annotations
 from datetime import datetime
 from enum import Enum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class CheckCategory(str, Enum):
@@ -40,16 +40,37 @@ class TargetAgent(str, Enum):
     VISUALIZER = "visualizer"
 
 
+class NoteAuthor(str, Enum):
+    """Сторона, сформировавшая замечание к доработке."""
+
+    BRAND_GUARDIAN = "brand_guardian"
+    SPECIALIST = "specialist"
+    CLIENT = "client"
+
+
 class RevisionNote(BaseModel):
-    """Замечание, направляемое подсистеме-исполнителю на доработку."""
+    """Замечание, направляемое подсистеме-исполнителю на доработку.
+
+    Формируется агентом-хранителем бренда по результатам проверки либо
+    специалистом команды при возврате материала на доработку, в том числе
+    по решению компании. Категория проверки указывается для замечаний
+    агента-хранителя бренда.
+    """
 
     note_id: str
     draft_id: str
     target_agent: TargetAgent
-    category: CheckCategory
+    author: NoteAuthor = NoteAuthor.BRAND_GUARDIAN
+    category: CheckCategory | None = None
     scene_index: int | None = None
     issue: str
     required_action: str
+
+    @model_validator(mode="after")
+    def _guardian_note_has_category(self) -> RevisionNote:
+        if self.author == NoteAuthor.BRAND_GUARDIAN and self.category is None:
+            raise ValueError("Для замечания агента-хранителя бренда требуется category")
+        return self
 
 
 class MaterialVerdict(BaseModel):

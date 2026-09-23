@@ -11,6 +11,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from agents.brand_guardian.models import RevisionNote
+from agents.character_core.models import CampaignContext
+from agents.creator.models import DraftBundle
+
 from .models import AssetBundle, AssetType, GenerationTask, Provider
 
 
@@ -69,16 +73,16 @@ class VisualizerAgent:
 
     def compose_tasks(
         self,
-        context: "CampaignContext",  # noqa: F821
-        draft_bundle: "DraftBundle",  # noqa: F821
+        context: CampaignContext,
+        draft_bundle: DraftBundle,
     ) -> list[GenerationTask]:
         """Формирует задания на генерацию по материалам агента-креатора."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
 
     def generate(
         self,
-        context: "CampaignContext",  # noqa: F821
-        draft_bundle: "DraftBundle",  # noqa: F821
+        context: CampaignContext,
+        draft_bundle: DraftBundle,
     ) -> AssetBundle:
         """Выполняет генерацию медиаматериалов через API-оркестратор."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
@@ -86,7 +90,7 @@ class VisualizerAgent:
     def revise(
         self,
         bundle: AssetBundle,
-        notes: list["RevisionNote"],  # noqa: F821
+        notes: list[RevisionNote],
     ) -> AssetBundle:
         """Выполняет повторную генерацию по замечаниям агента-хранителя бренда."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")

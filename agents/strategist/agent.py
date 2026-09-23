@@ -11,6 +11,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from ab_testing.models import Experiment
+from agents.character_core.models import CampaignContext
+from agents.trend_analyst.models import TrendReport
+
 from .models import ABRecommendation, ContentPlan
 
 
@@ -45,7 +49,8 @@ class StrategistConfig:
 class StrategistAgent:
     """
     Формирует контент-план кампании на основании контекста персонажа,
-    отчёта по трендам и рекомендаций системы A/B-тестирования.
+    отчёта по трендам, рекомендаций системы A/B-тестирования и действующих
+    экспериментов.
 
     Реализация методов ниже находится в закрытой ветке разработки
     и не входит в состав публичного репозитория.
@@ -56,13 +61,14 @@ class StrategistAgent:
 
     def build_plan(
         self,
-        context: "CampaignContext",  # noqa: F821
-        trend_report: "TrendReport",  # noqa: F821
+        context: CampaignContext,
+        trend_report: TrendReport,
         ab_recommendations: list[ABRecommendation] | None = None,
+        experiments: list[Experiment] | None = None,
     ) -> ContentPlan:
         """Формирует контент-план на основании входных данных кампании."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
 
-    def build_fallback_plan(self, context: "CampaignContext") -> ContentPlan:  # noqa: F821
+    def build_fallback_plan(self, context: CampaignContext) -> ContentPlan:
         """Формирует контент-план на базовых сценариях при отсутствии применимых трендов."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")

@@ -16,6 +16,8 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
+from agents.strategist.models import ContentFormat
+
 
 class DraftStatus(str, Enum):
     """Статус обработки концепта."""
@@ -40,7 +42,7 @@ class Draft(BaseModel):
 
     draft_id: str
     concept_id: str
-    format: str
+    format: ContentFormat
     status: DraftStatus = DraftStatus.READY
     scenes: list[Scene] = Field(default_factory=list)
     caption: str | None = None

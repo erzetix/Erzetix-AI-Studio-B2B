@@ -11,6 +11,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from agents.brand_guardian.models import RevisionNote
+from agents.character_core.models import CampaignContext
+from agents.strategist.models import ContentPlan
+
 from .models import DraftBundle
 
 
@@ -53,8 +57,8 @@ class CreatorAgent:
 
     def create_drafts(
         self,
-        context: "CampaignContext",  # noqa: F821
-        content_plan: "ContentPlan",  # noqa: F821
+        context: CampaignContext,
+        content_plan: ContentPlan,
     ) -> DraftBundle:
         """Формирует текстовые материалы по концептам контент-плана."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
@@ -62,7 +66,7 @@ class CreatorAgent:
     def revise(
         self,
         bundle: DraftBundle,
-        notes: list["RevisionNote"],  # noqa: F821
+        notes: list[RevisionNote],
     ) -> DraftBundle:
         """Выполняет доработку материалов по замечаниям агента-хранителя бренда."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")

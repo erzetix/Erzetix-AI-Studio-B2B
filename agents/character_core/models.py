@@ -23,12 +23,28 @@ class CharacterOwnership(str, Enum):
     SHARED = "shared"
 
 
+class CharacterStatus(str, Enum):
+    """Состояние профиля персонажа."""
+
+    DRAFT = "draft"
+    ACTIVE = "active"
+    ARCHIVED = "archived"
+
+
+class EngagementTrend(str, Enum):
+    """Динамика вовлечённости аудитории персонажа."""
+
+    GROWING = "growing"
+    STABLE = "stable"
+    DECLINING = "declining"
+
+
 class BehavioralState(BaseModel):
     """Текущее поведенческое состояние персонажа, обновляемое по метрикам кампаний."""
 
     tone: str
     recent_topics: list[str] = Field(default_factory=list)
-    engagement_trend: str
+    engagement_trend: EngagementTrend
 
 
 class CharacterProfile(BaseModel):
@@ -46,8 +62,37 @@ class CharacterProfile(BaseModel):
     identity_ref: str
     voice_profile_ref: str
     behavioral_state: BehavioralState
+    status: CharacterStatus = CharacterStatus.DRAFT
     profile_version: str
     updated_at: datetime
+
+
+class CharacterRegistration(BaseModel):
+    """Данные для регистрации нового персонажа компании.
+
+    Параметры идентичности и голосовой профиль размещаются в защищённом
+    хранилище до регистрации; в запросе передаются ссылки на них.
+    """
+
+    character_id: str
+    client_id: str
+    ownership: CharacterOwnership
+    rights_agreement_ref: str | None = None
+    display_name: str
+    identity_ref: str
+    voice_profile_ref: str
+    initial_behavioral_state: BehavioralState
+    requested_by: str
+
+
+class IdentityValidationResult(BaseModel):
+    """Результат проверки консистентности параметров идентичности персонажа."""
+
+    character_id: str
+    profile_version: str
+    passed: bool
+    issues: list[str] = Field(default_factory=list)
+    validated_at: datetime
 
 
 class Brief(BaseModel):

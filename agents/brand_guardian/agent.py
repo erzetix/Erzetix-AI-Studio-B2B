@@ -11,7 +11,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from .models import CheckCategory, ReviewReport
+from agents.character_core.models import CampaignContext
+from agents.creator.models import DraftBundle
+from agents.visualizer.models import AssetBundle
+
+from .models import CheckCategory, MaterialVerdict, ReviewReport
 
 
 @dataclass
@@ -63,9 +67,9 @@ class BrandGuardianAgent:
 
     def review(
         self,
-        context: "CampaignContext",  # noqa: F821
-        draft_bundle: "DraftBundle",  # noqa: F821
-        asset_bundle: "AssetBundle",  # noqa: F821
+        context: CampaignContext,
+        draft_bundle: DraftBundle,
+        asset_bundle: AssetBundle,
     ) -> ReviewReport:
         """Выполняет проверку материалов и формирует заключения."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
@@ -74,6 +78,6 @@ class BrandGuardianAgent:
         self,
         draft_id: str,
         category: CheckCategory,
-    ) -> "MaterialVerdict":  # noqa: F821
+    ) -> MaterialVerdict:
         """Направляет материал на оценку модели более высокого уровня возможностей."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")

@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from agents.character_core.models import CampaignContext
+
 from .models import TrendReport, TrendSignal, TrendSource
 
 
@@ -59,6 +61,6 @@ class TrendAnalystAgent:
         """Собирает необработанные сигналы о трендах из подключённых источников."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
 
-    def analyze(self, context: "CampaignContext") -> TrendReport:  # noqa: F821
+    def analyze(self, context: CampaignContext) -> TrendReport:
         """Формирует отчёт по трендам на основании контекста кампании."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")

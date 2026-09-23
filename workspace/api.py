@@ -11,14 +11,22 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 
+from ab_testing.models import Experiment
+from agents.brand_guardian.models import RevisionNote
+from agents.character_core.models import (
+    Brief,
+    CharacterProfile,
+    CharacterRegistration,
+    IdentityValidationResult,
+)
+from agents.metrics_analyst.models import PublicationMetrics
+
 from .models import (
     ApprovalDecision,
-    ApprovalMode,
     CampaignView,
     ClientAccount,
     ClientReport,
     MaterialView,
-    PublicationMetrics,
 )
 
 
@@ -27,7 +35,6 @@ class WorkspaceConfig:
     """Конфигурация рабочего места команды."""
 
     name: str = "workspace"
-    default_approval_mode: ApprovalMode = ApprovalMode.MANUAL
 
 
 class WorkspaceAPI:
@@ -48,6 +55,10 @@ class WorkspaceAPI:
 
     # --- Компании -------------------------------------------------------
 
+    def create_client(self, client: ClientAccount, specialist_id: str) -> ClientAccount:
+        """POST /clients — подключение компании."""
+        raise NotImplementedError("Логика реализована в закрытой ветке разработки")
+
     def list_clients(self, specialist_id: str) -> list[ClientAccount]:
         """GET /clients — получение списка компаний, за которыми закреплён специалист."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
@@ -56,9 +67,39 @@ class WorkspaceAPI:
         """GET /clients/{client_id} — получение параметров компании."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
 
+    # --- Персонажи ------------------------------------------------------
+
+    def list_characters(self, client_id: str, specialist_id: str) -> list[CharacterProfile]:
+        """GET /clients/{client_id}/characters — получение персонажей компании."""
+        raise NotImplementedError("Логика реализована в закрытой ветке разработки")
+
+    def register_character(
+        self,
+        registration: CharacterRegistration,
+        specialist_id: str,
+    ) -> CharacterProfile:
+        """POST /characters — регистрация персонажа компании в состоянии draft."""
+        raise NotImplementedError("Логика реализована в закрытой ветке разработки")
+
+    def validate_character(
+        self,
+        character_id: str,
+        specialist_id: str,
+    ) -> IdentityValidationResult:
+        """POST /characters/{character_id}/validate — проверка идентичности персонажа."""
+        raise NotImplementedError("Логика реализована в закрытой ветке разработки")
+
+    def activate_character(self, character_id: str, specialist_id: str) -> CharacterProfile:
+        """POST /characters/{character_id}/activate — ввод персонажа в работу."""
+        raise NotImplementedError("Логика реализована в закрытой ветке разработки")
+
+    def get_character_profile(self, character_id: str, specialist_id: str) -> CharacterProfile:
+        """GET /characters/{character_id} — получение профиля персонажа."""
+        raise NotImplementedError("Логика реализована в закрытой ветке разработки")
+
     # --- Кампании -------------------------------------------------------
 
-    def create_campaign(self, brief: "Brief", specialist_id: str) -> CampaignView:  # noqa: F821
+    def create_campaign(self, brief: Brief, specialist_id: str) -> CampaignView:
         """POST /campaigns — создание кампании на основании брифа."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
 
@@ -77,16 +118,16 @@ class WorkspaceAPI:
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
 
     def approve_material(self, material_id: str, specialist_id: str) -> ApprovalDecision:
-        """POST /materials/{material_id}/approve — утверждение материала командой."""
+        """POST /materials/{material_id}/approve — утверждение материала специалистом."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
 
-    def reject_material(
+    def return_material(
         self,
         material_id: str,
-        reason: str,
+        notes: list[RevisionNote],
         specialist_id: str,
     ) -> ApprovalDecision:
-        """POST /materials/{material_id}/reject — отклонение материала командой."""
+        """POST /materials/{material_id}/return — возврат материала на доработку."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
 
     def request_client_signoff(self, material_id: str, specialist_id: str) -> MaterialView:
@@ -121,10 +162,10 @@ class WorkspaceAPI:
         """POST /clients/{client_id}/reports — формирование периодического отчёта для компании."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
 
-    # --- Профиль персонажа ----------------------------------------------
+    # --- A/B-тестирование -----------------------------------------------
 
-    def get_character_profile(self, character_id: str, specialist_id: str) -> dict:
-        """GET /characters/{character_id} — получение профиля персонажа."""
+    def create_experiment(self, experiment: Experiment, specialist_id: str) -> Experiment:
+        """POST /experiments — регистрация эксперимента A/B-тестирования."""
         raise NotImplementedError("Логика реализована в закрытой ветке разработки")
 
     # --- Разграничение доступа ------------------------------------------

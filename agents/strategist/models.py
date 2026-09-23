@@ -36,9 +36,17 @@ class ABRecommendation(BaseModel):
     """Рекомендация системы A/B-тестирования по результатам предшествующих кампаний."""
 
     recommendation_id: str
+    experiment_id: str
     applies_to_format: ContentFormat
     adjustment: str
     confidence: float = Field(ge=0.0, le=1.0)
+
+
+class ABVariantRef(BaseModel):
+    """Принадлежность концепта к варианту эксперимента A/B-тестирования."""
+
+    experiment_id: str
+    variant_id: str
 
 
 class ContentConcept(BaseModel):
@@ -52,6 +60,7 @@ class ContentConcept(BaseModel):
     source_trend_id: str | None = None
     key_message: str
     virality_mechanics: list[str] = Field(default_factory=list)
+    ab_variant: ABVariantRef | None = None
 
 
 class ContentPlan(BaseModel):
