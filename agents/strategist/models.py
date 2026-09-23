@@ -25,7 +25,7 @@ class ContentFormat(str, Enum):
 
 
 class TargetPlatform(str, Enum):
-    """Целевая платформа размещения."""
+    """Целевая платформа размещения. Перечень подлежит уточнению."""
 
     TELEGRAM = "telegram"
     VK = "vk"
