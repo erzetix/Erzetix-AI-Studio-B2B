@@ -10,8 +10,17 @@ Body DNA, Style DNA, Prompt DNA) вынесена в защищённое хра
 from __future__ import annotations
 
 from datetime import datetime
+from enum import Enum
 
 from pydantic import BaseModel, Field
+
+
+class CharacterOwnership(str, Enum):
+    """Принадлежность прав на персонажа."""
+
+    STUDIO = "studio"
+    CLIENT = "client"
+    SHARED = "shared"
 
 
 class BehavioralState(BaseModel):
@@ -28,6 +37,10 @@ class CharacterProfile(BaseModel):
     character_id: str
     # Компания, под бренд которой создан персонаж.
     client_id: str
+    # Принадлежность прав на персонажа определяется договором с компанией.
+    # Условия договора относятся к защищаемым сведениям и передаются ссылкой.
+    ownership: CharacterOwnership
+    rights_agreement_ref: str | None = None
     display_name: str
     # Ссылки на защищённое хранилище, а не сами параметры идентичности.
     identity_ref: str

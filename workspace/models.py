@@ -14,13 +14,6 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 
-class UserRole(str, Enum):
-    """Роль сотрудника команды."""
-
-    ACCOUNT_MANAGER = "account_manager"
-    CONTENT_SPECIALIST = "content_specialist"
-
-
 class ApprovalMode(str, Enum):
     """Режим утверждения материалов."""
 
@@ -56,7 +49,8 @@ class ClientAccount(BaseModel):
     approval_mode: ApprovalMode
     brand_rules_ref: str
     account_credentials_ref: str
-    account_manager: str
+    # Специалисты команды, закреплённые за компанией.
+    assigned_specialists: list[str] = Field(min_length=1)
     # Периодичность отчёта для компании устанавливается договором
     # с компанией.
     report_period_days: int | None = Field(default=None, ge=1)
